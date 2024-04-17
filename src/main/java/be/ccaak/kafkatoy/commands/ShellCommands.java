@@ -36,7 +36,10 @@ public class ShellCommands {
     @ShellMethod
     public void publish(String msg, @ShellOption(valueProvider = TopicValueProvider.class) String topic) {
         System.out.println("Should publish :" + msg + " on topic " + topic);
-        KafkaProducer producer;
+        KafkaProducer producer = new KafkaProducer(Map.of("bootstrap.servers", "localhost:9092",
+                "key.serializer", "org.apache.kafka.common.serialization.StringSerializer",
+                "value.serializer", "org.apache.kafka.common.serialization.StringSerializer"));
+        producer.send(new org.apache.kafka.clients.producer.ProducerRecord(topic, msg));
     }
 
     @ShellMethod

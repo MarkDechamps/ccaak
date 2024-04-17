@@ -4,7 +4,6 @@ services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
     hostname: zookeeper
-    container_name: zookeeper
     ports:
       - "2181:2181"
     environment:
@@ -72,7 +71,6 @@ services:
   schema-registry:
     image: confluentinc/cp-schema-registry:7.5.0
     hostname: schema-registry
-    container_name: schema-registry
     depends_on:
       - broker1
       - broker2
@@ -205,7 +203,6 @@ services:
     ports:
       - 8082:8082
     hostname: rest-proxy
-    container_name: rest-proxy
     environment:
       KAFKA_REST_HOST_NAME: rest-proxy
       KAFKA_REST_BOOTSTRAP_SERVERS: 'broker1:29092'
