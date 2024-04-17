@@ -7,6 +7,8 @@ import org.apache.kafka.clients.admin.AdminClient;
 import static org.apache.kafka.clients.admin.AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 @ShellComponent
 @Slf4j
@@ -34,12 +37,13 @@ public class ShellCommands {
     }
 
     @ShellMethod
-    public void publish(String msg, @ShellOption(valueProvider = TopicValueProvider.class) String topic) {
+    public void publish(String msg, @ShellOption(valueProvider = TopicValueProvider.class) String topic) throws ExecutionException, InterruptedException {
         System.out.println("Should publish :" + msg + " on topic " + topic);
-        KafkaProducer producer = new KafkaProducer(Map.of("bootstrap.servers", "localhost:9092",
+        var producer = new KafkaProducer<String, String>(Map.of("bootstrap.servers", "localhost:9092",
                 "key.serializer", "org.apache.kafka.common.serialization.StringSerializer",
                 "value.serializer", "org.apache.kafka.common.serialization.StringSerializer"));
-        producer.send(new org.apache.kafka.clients.producer.ProducerRecord(topic, msg));
+        var result = producer.send(new ProducerRecord<>(topic, msg)).get();
+        log.info("Message published: {} ", result);
     }
 
     @ShellMethod
