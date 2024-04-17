@@ -60,7 +60,9 @@ public class ShellCommands {
     private static Map<String, Object> producerConfig() {
         return Map.of("bootstrap.servers", "localhost:9092",
                 "key.serializer", "org.apache.kafka.common.serialization.StringSerializer",
-                "value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+                "value.serializer", "org.apache.kafka.common.serialization.StringSerializer",
+                "batch.size","100"
+        );
     }
 
     private static Map<String, Object> consumerConfig(String groupId) {
