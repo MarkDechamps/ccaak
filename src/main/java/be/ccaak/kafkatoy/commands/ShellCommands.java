@@ -3,6 +3,8 @@ package be.ccaak.kafkatoy.commands;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.admin.AdminClient;
 import static org.apache.kafka.clients.admin.AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -10,7 +12,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -61,7 +62,7 @@ public class ShellCommands {
         return Map.of("bootstrap.servers", "localhost:9092",
                 "key.serializer", "org.apache.kafka.common.serialization.StringSerializer",
                 "value.serializer", "org.apache.kafka.common.serialization.StringSerializer",
-                "batch.size","100"
+                "batch.size", "100"
         );
     }
 
@@ -103,6 +104,25 @@ public class ShellCommands {
                 });
                 count++;
             }
+        }
+    }
+
+    @ShellMethod
+    public void publishAvro() {
+
+        try (var producer = new KafkaProducer<String, GenericRecord>(producerConfig())) {
+            IntStream.rangeClosed(0, 10).forEach(i -> {
+                var msg = new GenericData();
+                //msg.
+
+//                try {
+//                    //var result = producer.send(new ProducerRecord<>("avro", msg)).get();
+//                    //log.info("Message published: {} ", result);
+//                } catch (InterruptedException | ExecutionException e) {
+//                    throw new RuntimeException(e);
+//                }
+
+            });
         }
     }
 

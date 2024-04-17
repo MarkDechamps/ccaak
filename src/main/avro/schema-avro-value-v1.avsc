@@ -1,0 +1,18 @@
+{
+  "doc": "Sample schema to help you get started.",
+  "fields": [
+    {
+      "doc": "a string",
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "doc": "a number",
+      "name": "age",
+      "type": "int"
+    }
+  ],
+  "name": "helloworld",
+  "namespace": "be.kafka",
+  "type": "record"
+}
