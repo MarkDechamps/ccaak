@@ -94,7 +94,7 @@ public class ShellCommands {
         try (var consumer = new KafkaConsumer<String, String>(consumerConfig(groupId))) {
             consumer.subscribe(List.of(topic));
             int count = 0;
-            while (count < 3) {
+            while (count < 30) {
                 var result = consumer.poll(Duration.of(10, ChronoUnit.SECONDS));
                 log.info("Read:{}", result.count());
 
