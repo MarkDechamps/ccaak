@@ -80,7 +80,7 @@ public class ShellCommands {
         return Map.of("bootstrap.servers", "localhost:9092",
                 "key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer",
                 "value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer",
-                //    "auto.offset.reset","earliest",
+                    "auto.offset.reset","earliest",
                 "group.id", groupId);
     }
 
@@ -103,8 +103,9 @@ public class ShellCommands {
     }
 
     @ShellMethod
-    public void createTopic(String name, @ShellOption(defaultValue = "__NULL__") Integer partitionCount) throws ExecutionException, InterruptedException {
+    public void createTopic(String name, @ShellOption(defaultValue = "__NULL__") Integer partitionCount, Integer retentionSize) throws ExecutionException, InterruptedException {
         NewTopic newTopic = new NewTopic(name, Optional.ofNullable(partitionCount), Optional.empty());
+        newTopic.configs(Map.of("retention.bytes", String.valueOf(retentionSize)));
         var createTopicsResult = admin.createTopics(List.of(newTopic));
         int partitions = createTopicsResult.numPartitions(name).get();
         log.info("Topic created {} with partitions {}!", name, partitions);
