@@ -1,23 +1,22 @@
 package be.ccaak.kafkatoy.commands;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.admin.AdminClient;
 import static org.apache.kafka.clients.admin.AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG;
-import org.apache.kafka.clients.admin.NewTopic;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
-import org.springframework.shell.standard.ShellComponent;
-import org.springframework.shell.standard.ShellMethod;
-import org.springframework.shell.standard.ShellOption;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.springframework.shell.standard.ShellComponent;
+import org.springframework.shell.standard.ShellMethod;
+import org.springframework.shell.standard.ShellOption;
 
 @ShellComponent
 @Slf4j
@@ -28,8 +27,9 @@ public class ShellCommands {
     @PostConstruct
     public void init() {
         log.info("Initializing adminClient");
-        admin = AdminClient.create(Map.of(BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"));
+        admin = AdminClient.create(Map.of(BOOTSTRAP_SERVERS_CONFIG, "localhost:9093"));
     }
+
     @PreDestroy
     public void shutdown() {
         log.info("Closing adminClient");
@@ -50,20 +50,16 @@ public class ShellCommands {
     public void topics() throws ExecutionException, InterruptedException {
         var topics = admin.listTopics();
         topics.names().get()
-                .stream().filter(s->!s.startsWith("_"))
+                .stream().filter(s -> !s.startsWith("_"))
                 .forEach(System.out::println);
     }
+
     @ShellMethod
-    public void createTopic(String name) throws ExecutionException, InterruptedException {
-        NewTopic newTopic = new NewTopic(name, Optional.empty(),Optional.empty());
+    public void createTopic(String name, @ShellOption(defaultValue = "__NULL__") Integer partitionCount) throws ExecutionException, InterruptedException {
+        NewTopic newTopic = new NewTopic(name, Optional.ofNullable(partitionCount), Optional.empty());
         var createTopicsResult = admin.createTopics(List.of(newTopic));
-        var configFuture = createTopicsResult.config(name);
         int partitions = createTopicsResult.numPartitions(name).get();
         log.info("Topic created {} with partitions {}!", name, partitions);
-        var config = configFuture.get();
-        config.entries().forEach(e->{
-            log.info("{} - {}",e.type(),e.value());
-        });
     }
 
 }
