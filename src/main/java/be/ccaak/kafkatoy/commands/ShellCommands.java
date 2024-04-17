@@ -57,8 +57,13 @@ public class ShellCommands {
     public void createTopic(String name) throws ExecutionException, InterruptedException {
         NewTopic newTopic = new NewTopic(name, Optional.empty(),Optional.empty());
         var createTopicsResult = admin.createTopics(List.of(newTopic));
+        var configFuture = createTopicsResult.config(name);
         int partitions = createTopicsResult.numPartitions(name).get();
         log.info("Topic created {} with partitions {}!", name, partitions);
+        var config = configFuture.get();
+        config.entries().forEach(e->{
+            log.info("{} - {}",e.type(),e.value());
+        });
     }
 
 }
